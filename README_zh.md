@@ -4,7 +4,7 @@
 会话创建、流式聊天，以及管理员控制台功能。
 
 
-<center> ** [English][[README.md]] | [中文][[README_zh.md]] ** </center> 
+**[English](README.md) | 中文**
 
 
 ## 功能
