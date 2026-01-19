@@ -1,0 +1,198 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Claude 风格 - 奶油色背景 */
+    --background: 32 18% 95%;
+    --foreground: 28 10% 25%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 28 10% 25%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 28 10% 25%;
+
+    /* Claude 橙红色 - 用于发送按钮和强调 */
+    --primary: 15 75% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    /* AI 消息背景 - 白色 */
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 28 10% 25%;
+
+    --muted: 32 15% 90%;
+    --muted-foreground: 28 8% 45%;
+
+    --accent: 32 15% 92%;
+    --accent-foreground: 28 10% 25%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 32 12% 88%;
+    --input: 32 12% 88%;
+    --ring: 15 75% 65%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 28 10% 25%;
+    --sidebar-primary: 15 75% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 32 15% 95%;
+    --sidebar-accent-foreground: 28 10% 25%;
+    --sidebar-border: 32 12% 90%;
+    --sidebar-ring: 15 75% 65%;
+  }
+
+  .dark {
+    /* 深色模式 */
+    --background: 28 8% 12%;
+    --foreground: 32 15% 92%;
+
+    --card: 28 8% 15%;
+    --card-foreground: 32 15% 92%;
+
+    --popover: 28 8% 15%;
+    --popover-foreground: 32 15% 92%;
+
+    --primary: 15 75% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 28 8% 18%;
+    --secondary-foreground: 32 15% 92%;
+
+    --muted: 28 8% 20%;
+    --muted-foreground: 32 12% 60%;
+
+    --accent: 28 8% 22%;
+    --accent-foreground: 32 15% 92%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 28 8% 25%;
+    --input: 28 8% 25%;
+    --ring: 15 75% 65%;
+    
+    --sidebar-background: 28 8% 10%;
+    --sidebar-foreground: 32 15% 92%;
+    --sidebar-primary: 15 75% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 28 8% 18%;
+    --sidebar-accent-foreground: 32 15% 92%;
+    --sidebar-border: 28 8% 22%;
+    --sidebar-ring: 15 75% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Markdown 样式优化 */
+.prose {
+  max-width: none;
+  color: hsl(var(--foreground));
+}
+
+.prose p {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.prose p:first-child {
+  margin-top: 0;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.prose code {
+  @apply rounded bg-muted px-1.5 py-0.5 text-sm;
+  color: hsl(var(--foreground));
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  word-break: break-all;
+}
+
+.prose pre {
+  @apply rounded-lg bg-muted p-4;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-sm;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  white-space: pre;
+  word-break: normal;
+}
+
+.prose ul, .prose ol {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+  padding-left: 1.5em;
+}
+
+.prose li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: hsl(var(--foreground));
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose h1:first-child,
+.prose h2:first-child,
+.prose h3:first-child {
+  margin-top: 0;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-border;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-border/80;
+}

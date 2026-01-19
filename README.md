@@ -1,2 +1,4 @@
-# claude agent web
-claude code web端
+# Claude Agent Frontend
+
+English: `README.en.md`  
+中文: `README.zh.md`
