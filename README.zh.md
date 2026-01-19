@@ -182,9 +182,9 @@ vercel --prod
 ```nginx
 # nginx 配置示例
 gzip on;
-gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript application/font-woff application/font-woff2 font/woff font/woff2;
+gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2 application/vnd.ms-fontobject;
 
-location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
     expires 1y;
     add_header Cache-Control "public, immutable";
 }
