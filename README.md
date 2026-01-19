@@ -4,7 +4,7 @@ React (Vite) chat UI for the Claude Agent Backend. Supports multiple backend
 connections, session creation, streaming chat, and admin console tools.
 
 
- ** English | [中文](./README_zh.md) ** 
+ **English | [中文](./README_zh.md)** 
 
 
 ## Features
