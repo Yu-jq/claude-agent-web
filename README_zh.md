@@ -3,6 +3,10 @@
 基于 React（Vite）的聊天 UI，用于 Claude Agent 后端。支持多后端连接、
 会话创建、流式聊天，以及管理员控制台功能。
 
+
+<center> ** [English][[README.md]] | [中文][[README_zh.md]] ** </center> 
+
+
 ## 功能
 
 - 多后端连接（存储在 localStorage）
