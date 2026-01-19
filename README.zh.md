@@ -82,7 +82,7 @@ npm run build:prod
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
+    server_name example.com;
     
     root /path/to/dist;
     index index.html;
@@ -108,9 +108,10 @@ serve -s dist -p 3000
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+COPY pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install
 COPY . .
-RUN npm run build:prod
+RUN pnpm run build:prod
 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -181,7 +182,7 @@ vercel --prod
 ```nginx
 # nginx 配置示例
 gzip on;
-gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript application/font-woff application/font-woff2 font/woff font/woff2;
 
 location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
     expires 1y;

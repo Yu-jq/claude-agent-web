@@ -68,7 +68,7 @@ npm run build:prod
    ```nginx
    server {
        listen 80;
-       server_name your-domain.com;
+       server_name example.com;
        
        root /var/www/claude-agent-web;
        index index.html;
@@ -94,7 +94,7 @@ npm run build:prod
        gzip on;
        gzip_vary on;
        gzip_min_length 1024;
-       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml;
+       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2;
    }
    ```
 
@@ -388,7 +388,7 @@ After building, a `dist/` folder will be generated in the project root, containi
    ```nginx
    server {
        listen 80;
-       server_name your-domain.com;
+       server_name example.com;
        
        root /var/www/claude-agent-web;
        index index.html;
@@ -414,7 +414,7 @@ After building, a `dist/` folder will be generated in the project root, containi
        gzip on;
        gzip_vary on;
        gzip_min_length 1024;
-       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml;
+       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2;
    }
    ```
 
