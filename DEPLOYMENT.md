@@ -94,7 +94,7 @@ npm run build:prod
        gzip on;
        gzip_vary on;
        gzip_min_length 1024;
-       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2;
+       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2 application/vnd.ms-fontobject font/ttf font/opentype;
    }
    ```
 
@@ -165,7 +165,7 @@ npm run build:prod
            try_files $uri $uri/ /index.html;
        }
        
-       location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+       location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
            expires 1y;
            add_header Cache-Control "public, immutable";
        }
@@ -176,7 +176,7 @@ npm run build:prod
        }
        
        gzip on;
-       gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;
+       gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2 application/vnd.ms-fontobject;
    }
    ```
 
@@ -194,8 +194,6 @@ npm run build:prod
    创建 `docker-compose.yml`:
    
    ```yaml
-   version: '3.8'
-   
    services:
      web:
        build: .
@@ -414,7 +412,7 @@ After building, a `dist/` folder will be generated in the project root, containi
        gzip on;
        gzip_vary on;
        gzip_min_length 1024;
-       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2;
+       gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2 application/vnd.ms-fontobject font/ttf font/opentype;
    }
    ```
 
@@ -485,7 +483,7 @@ After building, a `dist/` folder will be generated in the project root, containi
            try_files $uri $uri/ /index.html;
        }
        
-       location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+       location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
            expires 1y;
            add_header Cache-Control "public, immutable";
        }
@@ -496,7 +494,7 @@ After building, a `dist/` folder will be generated in the project root, containi
        }
        
        gzip on;
-       gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript;
+       gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript image/svg+xml application/font-woff application/font-woff2 font/woff font/woff2 application/vnd.ms-fontobject;
    }
    ```
 
@@ -514,8 +512,6 @@ After building, a `dist/` folder will be generated in the project root, containi
    Create `docker-compose.yml`:
    
    ```yaml
-   version: '3.8'
-   
    services:
      web:
        build: .
