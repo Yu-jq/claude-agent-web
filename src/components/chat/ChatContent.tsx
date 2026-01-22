@@ -155,6 +155,9 @@ function ThinkingPanel({
             }
 
             if (kind === 'tool_use' || kind === 'tool_result') {
+              if (processDisplayMode === 'status' && kind === 'tool_use') {
+                return null;
+              }
               const toolName =
                 typeof item.metadata?.tool === 'string'
                   ? item.metadata.tool
@@ -193,17 +196,15 @@ function ThinkingPanel({
             }
 
             if (kind === 'thinking') {
-              if (!item.content) {
-                return null;
-              }
+              const content = item.content?.trim();
               return (
                 <div
                   key={item.id}
                   className="rounded-md border border-border/60 bg-background/60 px-3 py-2 text-xs"
                 >
-                  {processDisplayMode === 'full' ? (
+                  {content ? (
                     <div className="whitespace-pre-wrap text-sm text-foreground/90">
-                      {item.content}
+                      {content}
                     </div>
                   ) : (
                     <div className="text-xs text-muted-foreground">
@@ -276,7 +277,7 @@ export function ChatContent({ messages, processDisplayMode }: ChatContentProps) 
           results: resultItems,
           extras: otherItems,
           id:
-            currentUser?.id ??
+            (currentUser ? `assistant-${currentUser.id}` : null) ??
             thinkingItems[0]?.id ??
             resultItems[0]?.id ??
             `assistant-${rendered.length}`,

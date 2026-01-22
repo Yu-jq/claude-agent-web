@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { createBackendClient } from '@/lib/api';
 import { usePreferences } from '@/hooks/usePreferences';
-import type { ApiConnection } from '@/types/chat';
+import type { ApiConnection, ProcessDisplayMode } from '@/types/chat';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import type { SupportedLanguage } from '@/i18n';
@@ -47,8 +47,7 @@ export function SettingsDialog({
   onSetActiveConnection,
 }: SettingsDialogProps) {
   const { t } = useTranslation();
-  const { processDisplayMode, setProcessDisplayMode, language, setLanguage } =
-    usePreferences();
+  const { language, setLanguage } = usePreferences();
   const [formState, setFormState] = useState({
     id: '',
     name: '',
@@ -109,9 +108,22 @@ export function SettingsDialog({
     try {
       const client = createBackendClient(connection);
       const ok = await client.testConnection();
+      let processDisplayMode: ProcessDisplayMode = 'status';
+      if (ok) {
+        try {
+          const policyResponse = await client.getPolicy();
+          processDisplayMode =
+            policyResponse.policy.process_display_mode === 'full'
+              ? 'full'
+              : 'status';
+        } catch (error) {
+          console.error('Failed to load policy:', error);
+        }
+      }
       onUpdateConnection(connection.id, {
         verified: ok,
         lastCheckedAt: Date.now(),
+        processDisplayMode,
       });
       if (ok) {
         toast.success(t('settings.connectionVerified'));
@@ -264,56 +276,28 @@ export function SettingsDialog({
         </div>
 
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold">
-            {t('settings.responseDisplay')}
-          </h3>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="processMode">{t('settings.processDetail')}</Label>
-              <Select
-                value={processDisplayMode}
-                onValueChange={(value) =>
-                  setProcessDisplayMode(value === 'status' ? 'status' : 'full')
-                }
-              >
-                <SelectTrigger id="processMode">
-                  <SelectValue placeholder={t('settings.selectMode')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full">
-                    {t('settings.fullDetails')}
-                  </SelectItem>
-                  <SelectItem value="status">
-                    {t('settings.statusOnly')}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {t('settings.responseHint')}
-              </p>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="language">{t('settings.language')}</Label>
-              <Select
-                value={language}
-                onValueChange={(value) =>
-                  setLanguage(value as SupportedLanguage)
-                }
-              >
-                <SelectTrigger id="language">
-                  <SelectValue placeholder={t('settings.selectLanguage')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="zh">{t('languageOptions.zh')}</SelectItem>
-                  <SelectItem value="en">{t('languageOptions.en')}</SelectItem>
-                  <SelectItem value="ja">{t('languageOptions.ja')}</SelectItem>
-                  <SelectItem value="ko">{t('languageOptions.ko')}</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {t('settings.languageHint')}
-              </p>
-            </div>
+          <h3 className="text-sm font-semibold">{t('settings.language')}</h3>
+          <div className="grid gap-2">
+            <Label htmlFor="language">{t('settings.language')}</Label>
+            <Select
+              value={language}
+              onValueChange={(value) =>
+                setLanguage(value as SupportedLanguage)
+              }
+            >
+              <SelectTrigger id="language">
+                <SelectValue placeholder={t('settings.selectLanguage')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="zh">{t('languageOptions.zh')}</SelectItem>
+                <SelectItem value="en">{t('languageOptions.en')}</SelectItem>
+                <SelectItem value="ja">{t('languageOptions.ja')}</SelectItem>
+                <SelectItem value="ko">{t('languageOptions.ko')}</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {t('settings.languageHint')}
+            </p>
           </div>
         </div>
 

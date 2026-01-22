@@ -30,11 +30,6 @@ export function ChatSidebar({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftTitle, setDraftTitle] = useState('');
 
-  const formatPathLabel = (path: string) => {
-    const parts = path.split(/[\\/]+/).filter(Boolean);
-    return parts.length > 0 ? parts[parts.length - 1] : path;
-  };
-
   const formatTitleLabel = (title: string) => {
     if (title.length <= 10) return title;
     return `${title.slice(0, 10)}...`;
@@ -142,14 +137,6 @@ export function ChatSidebar({
                         >
                           {formatTitleLabel(conversation.title || t('chat.newChat'))}
                         </div>
-                        {conversation.cwd && (
-                          <div
-                            className="mt-0.5 text-xs text-muted-foreground truncate"
-                            title={conversation.cwd}
-                          >
-                            {formatPathLabel(conversation.cwd)}
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>

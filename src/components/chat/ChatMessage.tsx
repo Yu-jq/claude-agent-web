@@ -60,6 +60,10 @@ export function ChatMessage({
     );
   }
 
+  if (kind === 'tool_use' && processDisplayMode === 'status') {
+    return null;
+  }
+
   if (kind === 'tool_use' || kind === 'tool_result') {
     const toolName =
       typeof message.metadata?.tool === 'string' ? message.metadata.tool : 'unknown';

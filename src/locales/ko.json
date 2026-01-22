@@ -70,7 +70,7 @@
   },
   "session": {
     "title": "새 세션",
-    "description": "이 세션의 ClaudeAgentOptions를 설정합니다. 생성 후에는 수정할 수 없습니다.",
+    "description": "Create a new session using the admin-defined policy.",
     "projectPath": "프로젝트 경로(cwd)",
     "projectPlaceholder": "D:\\projects\\my-app",
     "permissionMode": "권한 모드",
@@ -127,7 +127,22 @@
     "statusActive": "활성",
     "statusRevoked": "취소됨",
     "revoke": "폐기",
-    "untitled": "제목 없음"
+    "untitled": "제목 없음",
+    "policyTitle": "Session Policy",
+    "policyEditing": "Editing policy for API key {{id}}",
+    "policyAllowedTools": "Allowed tools",
+    "policyPermissionMode": "Permission mode",
+    "policySelectPermission": "Select permission mode",
+    "policyResponseDisplay": "Response display",
+    "policyDisplaySelect": "Select display mode",
+    "policyDisplayStatus": "Status only",
+    "policyDisplayFull": "Full details",
+    "policySettingSources": "Setting sources",
+    "policySandbox": "Sandbox (JSON)",
+    "policyEdit": "Edit Policy",
+    "policyUpdate": "Update Policy",
+    "policyCancel": "Cancel Edit",
+    "policyReset": "Reset Policy"
   },
   "errors": {
     "failedLoadSessions": "세션을 불러오지 못했습니다: {{message}}",
@@ -146,11 +161,14 @@
     "createApiKeyFailed": "API 키 생성 실패.",
     "revokeApiKeyFailed": "API 키 폐기 실패.",
     "expiryInvalid": "유효한 만료 시간을 입력하세요.",
-    "connectionMissing": "백엔드 연결을 먼저 설정하세요."
+    "connectionMissing": "백엔드 연결을 먼저 설정하세요.",
+    "updatePolicyFailed": "Failed to update API key policy.",
+    "invalidPolicyJson": "Invalid sandbox JSON."
   },
   "success": {
     "newApiKey": "새 API 키: {{key}}",
-    "connectionVerified": "연결이 검증되었습니다."
+    "connectionVerified": "연결이 검증되었습니다.",
+    "policyUpdated": "API key policy updated."
   },
   "speech": {
     "start": "음성 입력 시작...",

@@ -36,13 +36,11 @@ export interface ApiConnection {
   apiKey: string;
   verified: boolean;
   lastCheckedAt?: number;
+  processDisplayMode?: ProcessDisplayMode;
 }
 
 export interface SessionCreateOptions {
-  cwd?: string;
-  permission_mode?: string;
-  allowed_tools?: string[];
-  setting_sources?: string[];
+  // Session options are server-managed; payload is intentionally empty.
 }
 
 export interface SessionInfo {
@@ -80,6 +78,7 @@ export interface ApiKeyInfo {
   created_at: string;
   expires_at: string;
   revoked: boolean;
+  policy?: ApiKeyPolicy | null;
 }
 
 export interface ApiKeyCreateResponse {
@@ -87,6 +86,19 @@ export interface ApiKeyCreateResponse {
   api_key: string;
   created_at: string;
   expires_at: string;
+  policy?: ApiKeyPolicy | null;
+}
+
+export interface ApiKeyPolicy {
+  allowed_tools?: string[];
+  permission_mode?: string;
+  setting_sources?: string[];
+  process_display_mode?: ProcessDisplayMode;
+  sandbox?: Record<string, unknown> | null;
+}
+
+export interface PolicyResponse {
+  policy: ApiKeyPolicy;
 }
 
 export interface StreamHandlers {

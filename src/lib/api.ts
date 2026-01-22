@@ -3,8 +3,10 @@ import type {
   ApiConnection,
   ApiKeyCreateResponse,
   ApiKeyInfo,
+  ApiKeyPolicy,
   Message,
   MessageInfo,
+  PolicyResponse,
   SessionCreateOptions,
   SessionInfo,
   StreamHandlers,
@@ -94,6 +96,18 @@ export class BackendClient {
     return data.messages as MessageInfo[];
   }
 
+  async getPolicy(): Promise<PolicyResponse> {
+    const response = await fetch(`${this.baseUrl}/api/policy`, {
+      method: 'GET',
+      headers: this.authHeaders(),
+    });
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(`HTTP ${response.status}: ${message}`);
+    }
+    return (await response.json()) as PolicyResponse;
+  }
+
   async updateSessionTitle(sessionId: string, title: string): Promise<string> {
     const response = await fetch(`${this.baseUrl}/api/sessions/${sessionId}`, {
       method: 'PATCH',
@@ -158,16 +172,17 @@ export class BackendClient {
 
   async adminCreateApiKey(
     adminKey: string,
-    expiresAt?: string
+    expiresAt?: string,
+    policy?: ApiKeyPolicy
   ): Promise<ApiKeyCreateResponse> {
     const headers: Record<string, string> = {
       ...(this.adminHeaders(adminKey) as Record<string, string>),
     };
-    let body: string | undefined;
-    if (expiresAt) {
-      headers['Content-Type'] = 'application/json';
-      body = JSON.stringify({ expires_at: expiresAt });
-    }
+    headers['Content-Type'] = 'application/json';
+    const body = JSON.stringify({
+      expires_at: expiresAt,
+      policy,
+    });
     const response = await fetch(`${this.baseUrl}/api/admin/apikeys`, {
       method: 'POST',
       headers,
@@ -186,6 +201,28 @@ export class BackendClient {
       {
         method: 'POST',
         headers: this.adminHeaders(adminKey),
+      }
+    );
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(`HTTP ${response.status}: ${message}`);
+    }
+  }
+
+  async adminUpdateApiKeyPolicy(
+    adminKey: string,
+    apiKeyId: string,
+    policy: ApiKeyPolicy
+  ): Promise<void> {
+    const response = await fetch(
+      `${this.baseUrl}/api/admin/apikeys/${apiKeyId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.adminHeaders(adminKey) as Record<string, string>),
+        },
+        body: JSON.stringify({ policy }),
       }
     );
     if (!response.ok) {

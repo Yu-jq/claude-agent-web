@@ -70,7 +70,7 @@
   },
   "session": {
     "title": "新しいセッション",
-    "description": "このセッションのClaudeAgentOptionsを設定します。作成後は変更できません。",
+    "description": "Create a new session using the admin-defined policy.",
     "projectPath": "プロジェクトパス（cwd）",
     "projectPlaceholder": "D:\\projects\\my-app",
     "permissionMode": "権限モード",
@@ -127,7 +127,22 @@
     "statusActive": "有効",
     "statusRevoked": "無効",
     "revoke": "取り消し",
-    "untitled": "無題"
+    "untitled": "無題",
+    "policyTitle": "Session Policy",
+    "policyEditing": "Editing policy for API key {{id}}",
+    "policyAllowedTools": "Allowed tools",
+    "policyPermissionMode": "Permission mode",
+    "policySelectPermission": "Select permission mode",
+    "policyResponseDisplay": "Response display",
+    "policyDisplaySelect": "Select display mode",
+    "policyDisplayStatus": "Status only",
+    "policyDisplayFull": "Full details",
+    "policySettingSources": "Setting sources",
+    "policySandbox": "Sandbox (JSON)",
+    "policyEdit": "Edit Policy",
+    "policyUpdate": "Update Policy",
+    "policyCancel": "Cancel Edit",
+    "policyReset": "Reset Policy"
   },
   "errors": {
     "failedLoadSessions": "セッションの読み込みに失敗しました: {{message}}",
@@ -146,11 +161,14 @@
     "createApiKeyFailed": "APIキーの作成に失敗しました。",
     "revokeApiKeyFailed": "APIキーの無効化に失敗しました。",
     "expiryInvalid": "有効な期限を指定してください。",
-    "connectionMissing": "バックエンド接続を設定してください。"
+    "connectionMissing": "バックエンド接続を設定してください。",
+    "updatePolicyFailed": "Failed to update API key policy.",
+    "invalidPolicyJson": "Invalid sandbox JSON."
   },
   "success": {
     "newApiKey": "新しいAPIキー: {{key}}",
-    "connectionVerified": "接続を検証しました。"
+    "connectionVerified": "接続を検証しました。",
+    "policyUpdated": "API key policy updated."
   },
   "speech": {
     "start": "音声入力を開始...",

@@ -4,11 +4,13 @@ import { Eye, EyeOff, RefreshCcw, Shield, KeyRound, ArrowLeft } from 'lucide-rea
 import { toast } from 'sonner';
 import { createBackendClient } from '@/lib/api';
 import { useConnections } from '@/hooks/useConnections';
-import { usePreferences } from '@/hooks/usePreferences';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -34,11 +36,46 @@ import { cn } from '@/lib/utils';
 import type {
   AdminSessionInfo,
   ApiKeyInfo,
+  ApiKeyPolicy,
   MessageInfo,
+  ProcessDisplayMode,
 } from '@/types/chat';
 import { useTranslation } from 'react-i18next';
 
 const ADMIN_KEY_STORAGE = 'ai-chat-admin-keys';
+const TOOL_OPTIONS = [
+  'Skill',
+  'Read',
+  'Write',
+  'Edit',
+  'Bash',
+  'Glob',
+  'Grep',
+  'WebFetch',
+];
+const SOURCE_OPTIONS = ['user', 'project', 'local'];
+const DEFAULT_POLICY: ApiKeyPolicy = {
+  allowed_tools: ['Skill', 'Read', 'Glob', 'Grep'],
+  permission_mode: 'acceptEdits',
+  setting_sources: ['project'],
+  process_display_mode: 'status',
+  sandbox: {
+    enabled: true,
+    autoAllowBashIfSandboxed: false,
+    excludedCommands: [],
+    allowUnsandboxedCommands: false,
+    network: {
+      allowUnixSockets: [],
+      allowAllUnixSockets: false,
+      allowLocalBinding: false,
+    },
+    ignoreViolations: {
+      file: [],
+      network: [],
+    },
+    enableWeakerNestedSandbox: false,
+  },
+};
 
 function loadAdminKey(connectionId: string): string | null {
   try {
@@ -111,7 +148,7 @@ export default function Admin() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { activeConnection, isConfigured } = useConnections();
-  const { processDisplayMode } = usePreferences();
+  const processDisplayMode: ProcessDisplayMode = 'full';
   const [adminKey, setAdminKey] = useState('');
   const [remember, setRemember] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -134,6 +171,24 @@ export default function Admin() {
     'minutes' | 'hours' | 'days' | 'months'
   >('minutes');
   const [expiryDateTime, setExpiryDateTime] = useState('');
+  const [policyAllowedTools, setPolicyAllowedTools] = useState<string[]>(
+    DEFAULT_POLICY.allowed_tools ?? []
+  );
+  const [policyPermissionMode, setPolicyPermissionMode] = useState(
+    DEFAULT_POLICY.permission_mode ?? 'acceptEdits'
+  );
+  const [policyProcessDisplayMode, setPolicyProcessDisplayMode] =
+    useState<ProcessDisplayMode>(
+      DEFAULT_POLICY.process_display_mode === 'full' ? 'full' : 'status'
+    );
+  const [policySettingSources, setPolicySettingSources] = useState<string[]>(
+    DEFAULT_POLICY.setting_sources ?? []
+  );
+  const [policySandboxJson, setPolicySandboxJson] = useState(
+    JSON.stringify(DEFAULT_POLICY.sandbox ?? {}, null, 2)
+  );
+  const [policyTargetKeyId, setPolicyTargetKeyId] = useState<string | null>(null);
+  const [policyError, setPolicyError] = useState<string | null>(null);
 
   const client = useMemo(() => {
     if (!activeConnection) {
@@ -321,12 +376,41 @@ export default function Admin() {
       toast.error(t('errors.expiryInvalid'));
       return;
     }
+    const policy = buildPolicyFromForm();
+    if (!policy) {
+      return;
+    }
     try {
-      const created = await client.adminCreateApiKey(adminKey.trim(), expiresAt);
+      const created = await client.adminCreateApiKey(
+        adminKey.trim(),
+        expiresAt,
+        policy
+      );
       toast.success(t('success.newApiKey', { key: created.api_key }));
       fetchApiKeys();
+      resetPolicyForm();
     } catch (error) {
       toast.error(t('errors.createApiKeyFailed'));
+    }
+  };
+
+  const handleUpdatePolicy = async () => {
+    if (!client || !policyTargetKeyId) return;
+    const policy = buildPolicyFromForm();
+    if (!policy) {
+      return;
+    }
+    try {
+      await client.adminUpdateApiKeyPolicy(
+        adminKey.trim(),
+        policyTargetKeyId,
+        policy
+      );
+      toast.success(t('success.policyUpdated'));
+      await fetchApiKeys();
+      resetPolicyForm();
+    } catch (error) {
+      toast.error(t('errors.updatePolicyFailed'));
     }
   };
 
@@ -342,6 +426,63 @@ export default function Admin() {
 
   const toggleKeyVisibility = (keyId: string) => {
     setApiKeyVisible((prev) => ({ ...prev, [keyId]: !prev[keyId] }));
+  };
+
+  const resetPolicyForm = useCallback(() => {
+    setPolicyAllowedTools(DEFAULT_POLICY.allowed_tools ?? []);
+    setPolicyPermissionMode(DEFAULT_POLICY.permission_mode ?? 'acceptEdits');
+    setPolicyProcessDisplayMode(
+      DEFAULT_POLICY.process_display_mode === 'full' ? 'full' : 'status'
+    );
+    setPolicySettingSources(DEFAULT_POLICY.setting_sources ?? []);
+    setPolicySandboxJson(JSON.stringify(DEFAULT_POLICY.sandbox ?? {}, null, 2));
+    setPolicyTargetKeyId(null);
+    setPolicyError(null);
+  }, []);
+
+  const loadPolicyToForm = useCallback((policy?: ApiKeyPolicy | null) => {
+    const nextPolicy = policy ?? DEFAULT_POLICY;
+    setPolicyAllowedTools(nextPolicy.allowed_tools ?? []);
+    setPolicyPermissionMode(nextPolicy.permission_mode ?? 'acceptEdits');
+    setPolicyProcessDisplayMode(
+      nextPolicy.process_display_mode === 'full' ? 'full' : 'status'
+    );
+    setPolicySettingSources(nextPolicy.setting_sources ?? []);
+    setPolicySandboxJson(JSON.stringify(nextPolicy.sandbox ?? {}, null, 2));
+    setPolicyError(null);
+  }, []);
+
+  const toggleOption = (
+    option: string,
+    current: string[],
+    setCurrent: (next: string[]) => void
+  ) => {
+    if (current.includes(option)) {
+      setCurrent(current.filter((item) => item !== option));
+    } else {
+      setCurrent([...current, option]);
+    }
+  };
+
+  const buildPolicyFromForm = (): ApiKeyPolicy | null => {
+    setPolicyError(null);
+    let sandboxValue: Record<string, unknown> | null | undefined = undefined;
+    const trimmed = policySandboxJson.trim();
+    if (trimmed) {
+      try {
+        sandboxValue = JSON.parse(trimmed) as Record<string, unknown>;
+      } catch (error) {
+        setPolicyError(t('errors.invalidPolicyJson'));
+        return null;
+      }
+    }
+    return {
+      allowed_tools: policyAllowedTools,
+      permission_mode: policyPermissionMode,
+      process_display_mode: policyProcessDisplayMode,
+      setting_sources: policySettingSources,
+      sandbox: sandboxValue,
+    };
   };
 
   if (!activeConnection || !isConfigured) {
@@ -696,6 +837,135 @@ export default function Admin() {
                   {t('admin.createKey')}
                 </Button>
               </div>
+
+              <div className="mt-6 grid gap-4">
+                <div className="text-sm font-semibold">
+                  {t('admin.policyTitle')}
+                </div>
+
+                {policyTargetKeyId && (
+                  <div className="rounded-md border border-dashed p-3 text-xs text-muted-foreground">
+                    {t('admin.policyEditing', { id: policyTargetKeyId })}
+                  </div>
+                )}
+
+                <div className="grid gap-2">
+                  <Label>{t('admin.policyAllowedTools')}</Label>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {TOOL_OPTIONS.map((tool) => (
+                      <label key={tool} className="flex items-center gap-2 text-sm">
+                        <Checkbox
+                          checked={policyAllowedTools.includes(tool)}
+                          onCheckedChange={() =>
+                            toggleOption(
+                              tool,
+                              policyAllowedTools,
+                              setPolicyAllowedTools
+                            )
+                          }
+                        />
+                        {tool}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>{t('admin.policyPermissionMode')}</Label>
+                  <Select
+                    value={policyPermissionMode}
+                    onValueChange={setPolicyPermissionMode}
+                  >
+                    <SelectTrigger className="w-64">
+                      <SelectValue placeholder={t('admin.policySelectPermission')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="default">
+                        {t('session.permissionDefault')}
+                      </SelectItem>
+                      <SelectItem value="acceptEdits">
+                        {t('session.permissionAcceptEdits')}
+                      </SelectItem>
+                      <SelectItem value="bypassPermissions">
+                        {t('session.permissionBypass')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>{t('admin.policyResponseDisplay')}</Label>
+                  <Select
+                    value={policyProcessDisplayMode}
+                    onValueChange={(value) =>
+                      setPolicyProcessDisplayMode(value === 'full' ? 'full' : 'status')
+                    }
+                  >
+                    <SelectTrigger className="w-64">
+                      <SelectValue placeholder={t('admin.policyDisplaySelect')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="status">
+                        {t('admin.policyDisplayStatus')}
+                      </SelectItem>
+                      <SelectItem value="full">
+                        {t('admin.policyDisplayFull')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>{t('admin.policySettingSources')}</Label>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {SOURCE_OPTIONS.map((source) => (
+                      <label key={source} className="flex items-center gap-2 text-sm">
+                        <Checkbox
+                          checked={policySettingSources.includes(source)}
+                          onCheckedChange={() =>
+                            toggleOption(
+                              source,
+                              policySettingSources,
+                              setPolicySettingSources
+                            )
+                          }
+                        />
+                        {source}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label>{t('admin.policySandbox')}</Label>
+                  <Textarea
+                    rows={10}
+                    value={policySandboxJson}
+                    onChange={(event) => setPolicySandboxJson(event.target.value)}
+                    className="font-mono text-xs"
+                  />
+                  {policyError && (
+                    <div className="text-xs text-destructive">{policyError}</div>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {policyTargetKeyId ? (
+                    <>
+                      <Button onClick={handleUpdatePolicy}>
+                        {t('admin.policyUpdate')}
+                      </Button>
+                      <Button variant="outline" onClick={resetPolicyForm}>
+                        {t('admin.policyCancel')}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button variant="outline" onClick={resetPolicyForm}>
+                      {t('admin.policyReset')}
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="mt-4 rounded-lg border bg-card">
@@ -751,6 +1021,17 @@ export default function Admin() {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="mr-2"
+                              onClick={() => {
+                                setPolicyTargetKeyId(key.id);
+                                loadPolicyToForm(key.policy);
+                              }}
+                            >
+                              {t('admin.policyEdit')}
+                            </Button>
                             <Button
                               size="sm"
                               variant="outline"

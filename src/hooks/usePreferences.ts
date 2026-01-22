@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import i18n, { detectLanguage, supportedLanguages, type SupportedLanguage } from '@/i18n';
-import type { ProcessDisplayMode } from '@/types/chat';
 
 const STORAGE_KEY = 'ai-chat-preferences';
 
 interface PreferencesState {
-  processDisplayMode: ProcessDisplayMode;
   language: SupportedLanguage;
 }
 
 const DEFAULTS: PreferencesState = {
-  processDisplayMode: 'full',
   language: detectLanguage(i18n.language),
 };
 
@@ -31,8 +28,6 @@ export function usePreferences() {
         document.documentElement.lang = language;
       }
       setPreferences({
-        processDisplayMode:
-          parsed.processDisplayMode === 'status' ? 'status' : 'full',
         language,
       });
     } catch (error) {
@@ -48,10 +43,6 @@ export function usePreferences() {
     }
   }, [preferences]);
 
-  const setProcessDisplayMode = (mode: ProcessDisplayMode) => {
-    setPreferences((prev) => ({ ...prev, processDisplayMode: mode }));
-  };
-
   const setLanguage = (language: SupportedLanguage) => {
     const normalized = detectLanguage(language);
     i18n.changeLanguage(normalized);
@@ -63,8 +54,6 @@ export function usePreferences() {
 
   return {
     preferences,
-    processDisplayMode: preferences.processDisplayMode,
-    setProcessDisplayMode,
     language: preferences.language,
     setLanguage,
   };

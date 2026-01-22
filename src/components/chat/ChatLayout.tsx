@@ -5,10 +5,8 @@ import { ChatSidebar } from './ChatSidebar';
 import { ChatContent } from './ChatContent';
 import { ChatInput } from './ChatInput';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
-import { NewSessionDialog } from '@/components/chat/NewSessionDialog';
 import { useChat } from '@/contexts/ChatContext';
 import { useConnections } from '@/hooks/useConnections';
-import { usePreferences } from '@/hooks/usePreferences';
 import { createBackendClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +15,6 @@ import type { Conversation, Message, SessionCreateOptions } from '@/types/chat';
 export function ChatLayout() {
   const navigate = useNavigate();
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [newSessionOpen, setNewSessionOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -48,7 +45,8 @@ export function ChatLayout() {
     deleteConversation,
   } = useChat();
 
-  const { processDisplayMode } = usePreferences();
+  const processDisplayMode =
+    activeConnection?.processDisplayMode === 'full' ? 'full' : 'status';
   const { t } = useTranslation();
   const cancelFnRef = useRef<(() => void) | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -125,6 +123,9 @@ export function ChatLayout() {
 
   const handleCreateSession = useCallback(
     async (payload: SessionCreateOptions) => {
+      if (isCreatingSession) {
+        return;
+      }
       if (!activeConnection) {
         toast.error(t('errors.configureBackendFirst'));
         setSettingsOpen(true);
@@ -143,9 +144,7 @@ export function ChatLayout() {
           updatedAt: now,
           sessionId,
           connectionId: activeConnection.id,
-          cwd: payload.cwd,
         });
-        setNewSessionOpen(false);
       } catch (error) {
         const message = error instanceof Error ? error.message : t('errors.createFailed');
         toast.error(message);
@@ -153,7 +152,7 @@ export function ChatLayout() {
         setIsCreatingSession(false);
       }
     },
-    [activeConnection, createConversation, t]
+    [activeConnection, createConversation, isCreatingSession, t]
   );
 
   const handleSendMessage = useCallback(
@@ -166,7 +165,6 @@ export function ChatLayout() {
 
       if (!currentConversation) {
         toast.error(t('errors.createSessionFirst'));
-        setNewSessionOpen(true);
         return;
       }
 
@@ -386,7 +384,7 @@ export function ChatLayout() {
                 setSettingsOpen(true);
                 return;
               }
-              setNewSessionOpen(true);
+              void handleCreateSession({});
             }}
             onDeleteConversation={deleteConversation}
             onRenameConversation={handleRenameConversation}
@@ -419,12 +417,6 @@ export function ChatLayout() {
         onUpdateConnection={updateConnection}
         onRemoveConnection={removeConnection}
         onSetActiveConnection={setActiveConnection}
-      />
-      <NewSessionDialog
-        open={newSessionOpen}
-        onOpenChange={setNewSessionOpen}
-        onCreate={handleCreateSession}
-        isSubmitting={isCreatingSession}
       />
     </div>
   );

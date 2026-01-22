@@ -70,7 +70,7 @@
   },
   "session": {
     "title": "新建会话",
-    "description": "为本会话配置 ClaudeAgentOptions，创建后不可修改。",
+    "description": "Create a new session using the admin-defined policy.",
     "projectPath": "项目路径（cwd）",
     "projectPlaceholder": "D:\\projects\\my-app",
     "permissionMode": "权限模式",
@@ -127,7 +127,22 @@
     "statusActive": "有效",
     "statusRevoked": "已吊销",
     "revoke": "吊销",
-    "untitled": "未命名"
+    "untitled": "未命名",
+    "policyTitle": "Session Policy",
+    "policyEditing": "Editing policy for API key {{id}}",
+    "policyAllowedTools": "Allowed tools",
+    "policyPermissionMode": "Permission mode",
+    "policySelectPermission": "Select permission mode",
+    "policyResponseDisplay": "Response display",
+    "policyDisplaySelect": "Select display mode",
+    "policyDisplayStatus": "Status only",
+    "policyDisplayFull": "Full details",
+    "policySettingSources": "Setting sources",
+    "policySandbox": "Sandbox (JSON)",
+    "policyEdit": "Edit Policy",
+    "policyUpdate": "Update Policy",
+    "policyCancel": "Cancel Edit",
+    "policyReset": "Reset Policy"
   },
   "errors": {
     "failedLoadSessions": "加载会话失败：{{message}}",
@@ -146,11 +161,14 @@
     "createApiKeyFailed": "创建 API 密钥失败。",
     "revokeApiKeyFailed": "吊销 API 密钥失败。",
     "expiryInvalid": "请提供有效的过期时间。",
-    "connectionMissing": "请先配置后端连接。"
+    "connectionMissing": "请先配置后端连接。",
+    "updatePolicyFailed": "Failed to update API key policy.",
+    "invalidPolicyJson": "Invalid sandbox JSON."
   },
   "success": {
     "newApiKey": "新 API 密钥：{{key}}",
-    "connectionVerified": "连接已验证。"
+    "connectionVerified": "连接已验证。",
+    "policyUpdated": "API key policy updated."
   },
   "speech": {
     "start": "开始语音输入...",

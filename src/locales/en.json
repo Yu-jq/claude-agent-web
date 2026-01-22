@@ -70,7 +70,7 @@
   },
   "session": {
     "title": "New Session",
-    "description": "Configure ClaudeAgentOptions for this session. These settings cannot be modified after creation.",
+    "description": "Create a new session using the admin-defined policy.",
     "projectPath": "Project Path (cwd)",
     "projectPlaceholder": "D:\\\\projects\\\\my-app",
     "permissionMode": "Permission Mode",
@@ -114,6 +114,21 @@
     "expiresAt": "Expires at",
     "invalidTime": "Invalid time",
     "createKey": "Create Key",
+    "policyTitle": "Session Policy",
+    "policyEditing": "Editing policy for API key {{id}}",
+    "policyAllowedTools": "Allowed tools",
+    "policyPermissionMode": "Permission mode",
+    "policySelectPermission": "Select permission mode",
+    "policyResponseDisplay": "Response display",
+    "policyDisplaySelect": "Select display mode",
+    "policyDisplayStatus": "Status only",
+    "policyDisplayFull": "Full details",
+    "policySettingSources": "Setting sources",
+    "policySandbox": "Sandbox (JSON)",
+    "policyEdit": "Edit Policy",
+    "policyUpdate": "Update Policy",
+    "policyCancel": "Cancel Edit",
+    "policyReset": "Reset Policy",
     "noSessions": "No sessions found.",
     "noApiKeys": "No API keys created yet.",
     "loadingMessages": "Loading messages...",
@@ -145,12 +160,15 @@
     "loadApiKeysFailed": "Failed to load API keys.",
     "createApiKeyFailed": "Failed to create API key.",
     "revokeApiKeyFailed": "Failed to revoke API key.",
+    "updatePolicyFailed": "Failed to update API key policy.",
+    "invalidPolicyJson": "Invalid sandbox JSON.",
     "expiryInvalid": "Please provide a valid expiry time.",
     "connectionMissing": "Please configure a backend connection first."
   },
   "success": {
     "newApiKey": "New API key: {{key}}",
-    "connectionVerified": "Connection verified."
+    "connectionVerified": "Connection verified.",
+    "policyUpdated": "API key policy updated."
   },
   "speech": {
     "start": "Starting voice input...",
